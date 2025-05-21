@@ -6,9 +6,10 @@ plugins {
 }
 
 android {
-    namespace = "com.example.flutter_ukl_2"
+    namespace 'com.example.flutter_ukl_2' // ganti sesuai package di AndroidManifest.xml
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

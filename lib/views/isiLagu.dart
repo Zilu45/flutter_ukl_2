@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_ukl_2/model/isiLaguModel.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 
 class IsiLagu extends StatefulWidget {
   final String songId;
@@ -15,11 +16,18 @@ class IsiLagu extends StatefulWidget {
 class _IsiLaguState extends State<IsiLagu> {
   IsiLaguModel? songData;
   bool isLoading = true;
+  YoutubePlayerController? _youtubeController;
 
   @override
   void initState() {
     super.initState();
     fetchSongDetail();
+  }
+
+  @override
+  void dispose() {
+    _youtubeController?.dispose();
+    super.dispose();
   }
 
   Future<void> fetchSongDetail() async {
@@ -32,6 +40,19 @@ class _IsiLaguState extends State<IsiLagu> {
         songData = IsiLaguModel.fromJson(data['data']);
         isLoading = false;
       });
+      // Inisialisasi YouTube player jika source adalah link YouTube
+      if (songData?.source != null && songData!.source.isNotEmpty) {
+        final videoId = YoutubePlayer.convertUrlToId(songData!.source);
+        if (videoId != null) {
+          _youtubeController = YoutubePlayerController(
+            initialVideoId: videoId,
+            flags: const YoutubePlayerFlags(
+              autoPlay: false,
+              mute: false,
+            ),
+          );
+        }
+      }
     } else {
       setState(() {
         isLoading = false;
@@ -39,7 +60,6 @@ class _IsiLaguState extends State<IsiLagu> {
     }
   }
 
-  // Untuk membuka video di YouTube
   Future<void> _launchVideo(String url) async {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
@@ -63,48 +83,34 @@ class _IsiLaguState extends State<IsiLagu> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        songData!.title ?? '',
+                        songData!.title,
                         style: const TextStyle(
                             fontSize: 24, fontWeight: FontWeight.bold),
                       ),
                       Text(
-                        songData!.artist ?? '',
-                        style:
-                            const TextStyle(fontSize: 18, color: Colors.grey),
+                        songData!.artist,
+                        style: const TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                       const SizedBox(height: 16),
-                      GestureDetector(
-                        onTap: () {
-                          if (songData!.source != null) {
-                            _launchVideo(songData!.source);
-                          }
-                        },
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
-                            AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Image.network(
-                                'https://learn.smktelkom-mlg.sch.id/ukl2/thumbnail/${songData!.thumbnail}',
-                                fit: BoxFit.cover,
-                                errorBuilder: (c, e, s) => Container(
-                                  color: Colors.grey.shade200,
-                                  child:
-                                      const Icon(Icons.music_video, size: 80),
-                                ),
-                              ),
+                      // YouTube Player
+                      if (_youtubeController != null)
+                        YoutubePlayer(
+                          controller: _youtubeController!,
+                          showVideoProgressIndicator: true,
+                          progressIndicatorColor: Colors.blue.shade700,
+                        )
+                      else
+                        AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Image.network(
+                            'https://learn.smktelkom-mlg.sch.id/ukl2/thumbnail/${songData!.thumbnail}',
+                            fit: BoxFit.cover,
+                            errorBuilder: (c, e, s) => Container(
+                              color: Colors.grey.shade200,
+                              child: const Icon(Icons.music_video, size: 80),
                             ),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.black45,
-                                borderRadius: BorderRadius.circular(40),
-                              ),
-                              child: const Icon(Icons.play_arrow,
-                                  color: Colors.white, size: 60),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
                       const SizedBox(height: 16),
                       Text(
                         'Description',

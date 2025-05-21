@@ -79,13 +79,37 @@ class _TambahLaguState extends State<TambahLagu> {
     setState(() => isLoading = false);
     if (response.statusCode == 200) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Song has been created!')),
-        );
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          '/playlist',
-          (route) => false,
+        // Tampilkan dialog Card berhasil
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.check_circle, color: Colors.green, size: 60),
+                const SizedBox(height: 12),
+                const Text(
+                  'Berhasil menambahkan lagu!',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context); // tutup dialog
+                    Navigator.pushNamedAndRemoveUntil(
+                      context,
+                      '/playlist',
+                      (route) => false,
+                    );
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+          ),
         );
       }
     } else {
@@ -106,7 +130,11 @@ class _TambahLaguState extends State<TambahLagu> {
         centerTitle: true,
         leading: IconButton(
           onPressed: () {
-            Navigator.popUntil(context, ModalRoute.withName('/playlist'));
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              '/playlist',
+              (route) => false,
+            );
           },
           icon: const Icon(Icons.music_note),
         ),
@@ -201,7 +229,7 @@ class _TambahLaguState extends State<TambahLagu> {
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
                                       '/playlist',
-                                      (route) => true,
+                                      (route) => false,
                                     );
                                   },
                             child: const Text('Cancel'),
@@ -210,7 +238,7 @@ class _TambahLaguState extends State<TambahLagu> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: isLoading ? null : saveSong,
+                            onPressed: isLoading ? saveSong : saveSong,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.blue.shade700,
                             ),
