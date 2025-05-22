@@ -1,16 +1,8 @@
 # flutter_ukl_2
 
-A new Flutter project.
+1. Login
+   ![image](https://github.com/user-attachments/assets/6943d043-503d-4e4f-b1a6-ccabafc0b965)
+2. Hasil Login
+   ![image](https://github.com/user-attachments/assets/148e43bf-ac8b-4f35-bafd-25dc72ef9e06)
+3. Playlist Beranda
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
